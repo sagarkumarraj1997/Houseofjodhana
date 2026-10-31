@@ -1,6 +1,7 @@
-import { useEffect, useRef } from "react";
-import { Slot } from "./Slot.jsx";
-import { useStore } from "./store.jsx";
+import React, { useEffect, useRef, useState } from "react";
+import { Drawer, Burger, Group, Box, ActionIcon, Badge, Button } from "@mantine/core";
+import { Slot } from "./Slot";
+import { useStore } from "./store";
 /* Shared primitives — House of Jodhana */
 
 export const GLOBAL_CSS = `
@@ -29,20 +30,20 @@ export const GLOBAL_CSS = `
 export function GlobalStyles() { return <style>{GLOBAL_CSS}</style>; }
 
 /* Brand emblem (from brand kit) */
-export function Emblem({ variant = "color", size = 48, style = {} }) {
+export function Emblem({ variant = "color", size = 48, style = {} }: { variant?: string; size?: number; style?: React.CSSProperties }) {
   return <img src={`/assets/emblem-${variant}.png`} alt="House of Jodhana emblem" style={{ width: size, height: "auto", ...style }} />;
 }
-export function Wordmark({ variant = "blue", width = 260, style = {} }) {
+export function Wordmark({ variant = "blue", width = 260, style = {} }: { variant?: string; width?: number; style?: React.CSSProperties }) {
   return <img src={`/assets/wordmark-${variant}.png`} alt="House of Jodhana" style={{ width, height: "auto", ...style }} />;
 }
 /* legacy name used across pages */
-export function BrandMark({ size = 38, color }) {
+export function BrandMark({ size = 38, color }: { size?: number; color?: string }) {
   const light = color && /E8|D4|FFF|fff|C9|D9/.test(color);
   return <Emblem variant={light ? "white" : "color"} size={size} />;
 }
 
 /* Pichwai lotus — simple petals */
-export function Lotus({ size = 40, color = "var(--gold)", fill = "none", stroke = 1 }) {
+export function Lotus({ size = 40, color = "var(--gold)", fill = "none", stroke = 1 }: { size?: number; color?: string; fill?: string; stroke?: number }) {
   return (
     <svg width={size} height={size * 0.8} viewBox="0 0 50 40" aria-hidden>
       <g fill={fill} stroke={color} strokeWidth={stroke} strokeLinejoin="round">
@@ -58,7 +59,7 @@ export function Lotus({ size = 40, color = "var(--gold)", fill = "none", stroke 
 }
 
 /* Pichwai lotus-pond band: water with a row of lotuses */
-export function LotusPond({ count = 18, dark = false }) {
+export function LotusPond({ count = 18, dark = false }: { count?: number; dark?: boolean }) {
   return (
     <div aria-hidden style={{ background: dark ? "var(--midnight)" : "var(--royal)", padding: "12px 0 6px", overflow: "hidden", position: "relative" }}>
       <div style={{ position: "absolute", inset: 0, background: "repeating-linear-gradient(180deg,transparent 0 7px,rgba(251,247,239,.08) 7px 8px)", opacity: 1 }} />
@@ -70,12 +71,12 @@ export function LotusPond({ count = 18, dark = false }) {
     </div>
   );
 }
-export const LotusRow = ({ dark }) => <LotusPond count={22} dark={dark} />;
+export const LotusRow = ({ dark }: { dark?: boolean }) => <LotusPond count={22} dark={dark} />;
 
-export function Ornament({ width = 120 }) {
+export function Ornament({ width = 120 }: { width?: number }) {
   return <img src="/assets/rule-gold.png" alt="" aria-hidden style={{ width, height: "auto", maxWidth: "100%", margin: "0 auto" }} />;
 }
-export function CornerFlourish({ size = 64, color = "var(--gold)" }) {
+export function CornerFlourish({ size = 64, color = "var(--gold)" }: { size?: number; color?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" fill="none" aria-hidden style={{ opacity: .7 }}>
       <path d="M0 0H26M0 0V26" stroke={color} strokeWidth="1" /><path d="M5 5H20M5 5V20" stroke={color} strokeWidth=".6" />
@@ -83,11 +84,11 @@ export function CornerFlourish({ size = 64, color = "var(--gold)" }) {
     </svg>
   );
 }
-export function DiamondStrip({ color = "var(--gold)", count = 16 }) {
+export function DiamondStrip({ color = "var(--gold)", count = 16 }: { color?: string; count?: number }) {
   return <div style={{ display: "flex", justifyContent: "center", gap: 12 }} aria-hidden>{Array.from({ length: count }).map((_, i) => <div key={i} style={{ width: 6, height: 6, background: color, transform: "rotate(45deg)", opacity: i === 0 || i === count - 1 ? .4 : .9 }} />)}</div>;
 }
 export const TempleStrip = DiamondStrip;
-export function SacredDivider({ mark = "॥ खम्मा घणी ॥", color = "var(--gold)" }) {
+export function SacredDivider({ mark = "॥ खम्मा घणी ॥", color = "var(--gold)" }: { mark?: string; color?: string }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 20, color }}>
       <div style={{ flex: 1, height: 1, background: `linear-gradient(90deg,transparent,${color})` }} />
@@ -97,16 +98,17 @@ export function SacredDivider({ mark = "॥ खम्मा घणी ॥", colo
   );
 }
 
-export function PH({ label, code, tone = "ivory", height = 320, style = {}, children }) {
+export function PH({ label, code, tone = "ivory", height = 320, style = {}, children }: { label?: string; code?: string; tone?: string; height?: number | string; style?: React.CSSProperties; children?: React.ReactNode }) {
   return <div className={`ph ${tone === "ivory" ? "" : tone}`} style={{ height, ...style }}>{children}{label && <div className="ph-label">{label}</div>}{code && <div className="ph-corner">{code}</div>}</div>;
 }
 
 /* Jharokha arch (cusped top like the emblem) with image slot */
 export const ARCH = "50% 50% 4px 4px / 34% 34% 4px 4px";
-export function ArchPH({ label, tone = "ivory", height = 360, slotId = null, placeholder = null }) {
+export function ArchPH({ label, tone = "ivory", height = 360, slotId = null, placeholder = null }: { label?: string; tone?: string; height?: number | string; slotId?: string | null; placeholder?: string | null }) {
   return (
     <div style={{ position: "relative" }}>
       <div className={`ph ${tone === "ivory" ? "" : tone}`} style={{ height, borderRadius: ARCH }}>
+        {/* IMAGE SLOT: slotId passed as prop (e.g. "festive-left", "festive-right", etc.) */}
         {slotId ? <Slot id={slotId} placeholder={placeholder || label || "Drop image"} shape="rounded" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} /> : (label && <div className="ph-label">{label}</div>)}
         <div style={{ position: "absolute", inset: 12, borderRadius: ARCH, border: "1px solid var(--gold-soft)", opacity: .7, pointerEvents: "none" }} />
       </div>
@@ -115,12 +117,12 @@ export function ArchPH({ label, tone = "ivory", height = 360, slotId = null, pla
     </div>
   );
 }
-export function TripleArch({ tones = ["maroon", "peacock", "emerald"], height = 280 }) {
+export function TripleArch({ tones = ["maroon", "peacock", "emerald"], height = 280 }: { tones?: string[]; height?: number }) {
   return <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr 1fr", gap: 14, alignItems: "end" }}>{tones.map((t, i) => <ArchPH key={i} tone={t} height={i === 1 ? height : height * .86} />)}</div>;
 }
 
 /* Pichwai-style nested border frame */
-export function PichwaiFrame({ children, style = {} }) {
+export function PichwaiFrame({ children, style = {} }: { children: React.ReactNode; style?: React.CSSProperties }) {
   return (
     <div className="pich-frame" style={style}>
       <div className="pf-2"><div className="pf-3">{children}</div></div>
@@ -130,7 +132,7 @@ export function PichwaiFrame({ children, style = {} }) {
 }
 
 /* Made in Jodhpur — rotating circular stamp */
-export function JodhpurStamp({ size = 150, dark = false }) {
+export function JodhpurStamp({ size = 150, dark = false }: { size?: number; dark?: boolean }) {
   const c = dark ? "rgba(251,247,239,.75)" : "#0A3A8E";
   const id = "st" + size + (dark ? "d" : "l");
   return (
@@ -147,7 +149,7 @@ export function JodhpurStamp({ size = 150, dark = false }) {
 }
 
 /* Postmark-style badge */
-export function Postmark({ dark = false }) {
+export function Postmark({ dark = false }: { dark?: boolean }) {
   const c = dark ? "var(--gold-soft)" : "var(--royal)";
   return (
     <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", padding: "10px 16px", border: `1px solid ${c}`, color: c, transform: "rotate(-3deg)", borderRadius: 2 }}>
@@ -159,14 +161,14 @@ export function Postmark({ dark = false }) {
 }
 
 /* Scroll tape — marquee strip that also drifts with scroll */
-export function Tape({ items, tone = "royal", rotate = 0, reverse = false, speed = 40 }) {
-  const ref = useRef(null);
+export function Tape({ items, tone = "royal", rotate = 0, reverse = false, speed = 40 }: { items: string[]; tone?: string; rotate?: number; reverse?: boolean; speed?: number }) {
+  const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = ref.current; if (!el) return;
-    let raf; const onS = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { const r = el.getBoundingClientRect(); const p = (r.top - window.innerHeight) / window.innerHeight; el.style.transform = `translateX(${(reverse ? -1 : 1) * p * 120}px)`; }); };
+    let raf: number; const onS = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { const r = el.getBoundingClientRect(); const p = (r.top - window.innerHeight) / window.innerHeight; el.style.transform = `translateX(${(reverse ? -1 : 1) * p * 120}px)`; }); };
     onS(); window.addEventListener("scroll", onS, { passive: true }); return () => window.removeEventListener("scroll", onS);
-  }, []);
-  const bg = { royal: "var(--royal)", gold: "var(--sand)", midnight: "var(--midnight)", ivory: "var(--ivory)", turq: "var(--royal)" }[tone];
+  }, [reverse]);
+  const bg = ({ royal: "var(--royal)", gold: "var(--sand)", midnight: "var(--midnight)", ivory: "var(--ivory)", turq: "var(--royal)" } as Record<string, string>)[tone] || "var(--royal)";
   const fg = tone === "gold" || tone === "ivory" ? "var(--midnight)" : "var(--ivory)";
   const list = [...items, ...items, ...items, ...items];
   return (
@@ -178,7 +180,7 @@ export function Tape({ items, tone = "royal", rotate = 0, reverse = false, speed
   );
 }
 /* two crossing tapes */
-export function TapeCross({ a, b }) {
+export function TapeCross({ a, b }: { a: string[]; b: string[] }) {
   return (
     <div style={{ position: "relative", height: 180, overflow: "hidden", display: "grid", alignItems: "center" }}>
       <div style={{ position: "absolute", left: 0, right: 0, top: 40 }}><Tape items={a} tone="royal" rotate={-3} /></div>
@@ -186,20 +188,49 @@ export function TapeCross({ a, b }) {
     </div>
   );
 }
-export const Marquee = ({ items }) => <Tape items={items} tone="midnight" />;
+export const Marquee = ({ items }: { items: string[] }) => <Tape items={items} tone="midnight" />;
 
-export function NavStoreIcons({ setRoute }) {
+export function NavStoreIcons({ setRoute }: { setRoute: (r: string) => void }) {
   const s = useStore(); if (!s) return null;
-  const I = ({ t, onClick, children, badge }) => <button className="nav-icon" title={t} aria-label={t} onClick={onClick}>{children}{badge > 0 && <span style={{ position: "absolute", top: 2, right: 0, minWidth: 16, height: 16, padding: "0 4px", background: "var(--royal)", color: "var(--ivory)", fontSize: 9, borderRadius: 8, display: "grid", placeItems: "center", fontWeight: 600 }}>{badge}</span>}</button>;
-  return <>
-    <I t={s.user ? `Account · ${s.user.first}` : "Sign in"} onClick={() => s.user ? setRoute("account") : s.setAuth("signin")}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4"><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></svg>{s.user && <span style={{ position: "absolute", bottom: 4, right: 4, width: 6, height: 6, borderRadius: "50%", background: "var(--royal)" }} />}</I>
-    <I t="Wishlist" badge={s.wish.length} onClick={() => s.user ? setRoute("account") : s.setAuth("signin")}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4"><path d="M12 21s-8-5-8-11a4.5 4.5 0 0 1 8-3 4.5 4.5 0 0 1 8 3c0 6-8 11-8 11z" /></svg></I>
-    <I t="Bag" badge={s.count} onClick={() => s.setDrawer(true)}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4"><path d="M5 8h14l-1 13H6z" /><path d="M9 8V6a3 3 0 0 1 6 0v2" /></svg></I>
-  </>;
+  const I = ({ t, onClick, children, badge }: { t: string; onClick: () => void; children: React.ReactNode; badge?: number }) => (
+    <ActionIcon variant="subtle" className="nav-icon" title={t} aria-label={t} onClick={onClick} style={{ position: "relative", color: "inherit", width: 38, height: 38 }}>
+      {children}
+      {badge != null && badge > 0 && (
+        <Badge size="xs" circle style={{ position: "absolute", top: 2, right: 0, background: "var(--royal)", color: "var(--ivory)", fontSize: 9, minWidth: 16, height: 16 }}>
+          {badge}
+        </Badge>
+      )}
+    </ActionIcon>
+  );
+  return (
+    <Group gap={4}>
+      <I t={s.user ? `Account · ${s.user.first}` : "Sign in"} onClick={() => s.user ? setRoute("account") : s.setAuth("signin")}>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4"><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></svg>
+        {s.user && <span style={{ position: "absolute", bottom: 6, right: 6, width: 6, height: 6, borderRadius: "50%", background: "var(--royal)" }} />}
+      </I>
+      <I t="Wishlist" badge={s.wish.length} onClick={() => s.user ? setRoute("account") : s.setAuth("signin")}>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4"><path d="M12 21s-8-5-8-11a4.5 4.5 0 0 1 8-3 4.5 4.5 0 0 1 8 3c0 6-8 11-8 11z" /></svg>
+      </I>
+      <I t="Bag" badge={s.count} onClick={() => s.setDrawer(true)}>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4"><path d="M5 8h14l-1 13H6z" /><path d="M9 8V6a3 3 0 0 1 6 0v2" /></svg>
+      </I>
+    </Group>
+  );
 }
+
 /* NAV */
-export function Nav({ route, setRoute, cartCount = 2 }) {
-  const links = [{ id: "home", label: "Home" }, { id: "catalog", label: "Catalog" }, { id: "gifts", label: "Gifting" }, { id: "gallery", label: "Gallery" }, { id: "blog", label: "Journal" }, { id: "about", label: "About Us" }, { id: "logistics", label: "Shipping" }, { id: "contact", label: "Contact" }];
+export function Nav({ route, setRoute }: { route: string; setRoute: (r: string) => void; cartCount?: number }) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const links = [
+    { id: "home", label: "Home" },
+    { id: "catalog", label: "Catalog" },
+    { id: "gifts", label: "Gifting" },
+    { id: "gallery", label: "Gallery" },
+    { id: "blog", label: "Journal" },
+    { id: "about", label: "About Us" },
+    { id: "logistics", label: "Shipping" },
+    { id: "contact", label: "Contact" },
+  ];
   return (
     <header className="nav">
       <div className="nav-top">
@@ -211,19 +242,51 @@ export function Nav({ route, setRoute, cartCount = 2 }) {
           <Emblem size={44} />
           <div><img className="wm" src="/assets/wordmark-blue.png" alt="House of Jodhana" style={{ width: 200, height: "auto" }} /><div className="uc brand-tag" style={{ fontSize: 8, color: "var(--ink-soft)", marginTop: 6, letterSpacing: ".42em" }}>Handcrafted in Rajasthan</div></div>
         </div>
-        <nav className="nav-links">{links.map(l => <div key={l.id} className={`nav-link ${route === l.id ? "active" : ""}`} onClick={() => setRoute(l.id)}>{l.label}</div>)}</nav>
+        <nav className="nav-links">
+          {links.map(l => (
+            <div key={l.id} className={`nav-link ${route === l.id ? "active" : ""}`} onClick={() => setRoute(l.id)}>
+              {l.label}
+            </div>
+          ))}
+        </nav>
         <div className="nav-actions">
-          <div className="nav-icon" title="Search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg></div>
+          <ActionIcon variant="subtle" className="nav-icon" title="Search" aria-label="Search" style={{ color: "inherit", width: 38, height: 38 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+          </ActionIcon>
           <NavStoreIcons setRoute={setRoute} />
-          <button className="btn solid" style={{ padding: "11px 18px" }} onClick={() => setRoute("catalog")}>Shop <span className="arrow">→</span></button>
+          <Button className="btn solid" style={{ padding: "11px 18px", height: "auto" }} onClick={() => setRoute("catalog")}>Shop <span className="arrow">→</span></Button>
+          <Burger opened={mobileOpen} onClick={() => setMobileOpen(!mobileOpen)} hiddenFrom="md" size="sm" aria-label="Toggle navigation" />
         </div>
       </div>
+      {/* Mobile Drawer using Mantine */}
+      <Drawer
+        opened={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+        position="left"
+        size="xs"
+        padding="md"
+        title={<Emblem size={34} />}
+        styles={{ content: { background: "var(--ivory)", color: "var(--ink)" } }}
+      >
+        <div style={{ display: "flex", flexDirection: "column", gap: 18, marginTop: 20 }}>
+          {links.map(l => (
+            <div
+              key={l.id}
+              className={`nav-link ${route === l.id ? "active" : ""}`}
+              style={{ fontSize: 16, padding: "8px 0" }}
+              onClick={() => { setRoute(l.id); setMobileOpen(false); }}
+            >
+              {l.label}
+            </div>
+          ))}
+        </div>
+      </Drawer>
     </header>
   );
 }
 
 /* FOOTER */
-export function Footer({ setRoute = () => { } }) {
+export function Footer({ setRoute = () => { } }: { setRoute?: (r: string) => void }) {
   return (
     <footer>
       <Tape items={["पधारो म्हारे देस", "Padhāro Mhāre Des", "Made in Jodhpur", "खम्मा घणी", "Handcrafted in Rajasthan"]} tone="ivory" />
@@ -250,7 +313,7 @@ export function Footer({ setRoute = () => { } }) {
 }
 
 /* Section header — block typography */
-export function SectionHeader({ eyebrow, title, sub, dark = false, hindi }) {
+export function SectionHeader({ eyebrow, title, sub, dark = false, hindi }: { eyebrow: string; title: React.ReactNode; sub?: string; dark?: boolean; hindi?: string }) {
   return (
     <div className="rv" style={{ maxWidth: 980, margin: "0 auto", textAlign: "center", color: dark ? "var(--ivory)" : "var(--ink)" }}>
       <div className="uc" style={{ color: dark ? "rgba(251,247,239,.6)" : "var(--ink-soft)", marginBottom: 22, fontSize: 10, letterSpacing: ".4em" }}>{eyebrow}</div>
@@ -263,7 +326,7 @@ export function SectionHeader({ eyebrow, title, sub, dark = false, hindi }) {
 }
 
 /* Global scroll reveal + progress */
-export function useScrollFX(dep) {
+export function useScrollFX(dep: any) {
   useEffect(() => {
     const prog = document.getElementById("progress");
     const onS = () => { const h = document.documentElement; const p = h.scrollTop / ((h.scrollHeight - h.clientHeight) || 1); if (prog) prog.style.width = (p * 100) + "%"; };
@@ -272,16 +335,20 @@ export function useScrollFX(dep) {
       document.querySelectorAll("main section > div").forEach(el => { if (!el.closest(".no-rv") && !el.classList.contains("rv")) el.classList.add("rv"); });
       const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .08, rootMargin: "0px 0px -6% 0px" });
       document.querySelectorAll(".rv,.rv-mask").forEach(el => io.observe(el));
-      window.__rvio = io;
+      (window as any).__rvio = io;
     }, 60);
     const fb = setTimeout(() => document.querySelectorAll(".rv,.rv-mask").forEach(el => { const r = el.getBoundingClientRect(); if (r.top < window.innerHeight) el.classList.add("in"); }), 1200);
-    return () => { clearTimeout(t); clearTimeout(fb); window.removeEventListener("scroll", onS); window.__rvio && window.__rvio.disconnect(); };
+    return () => { clearTimeout(t); clearTimeout(fb); window.removeEventListener("scroll", onS); (window as any).__rvio && (window as any).__rvio.disconnect(); };
   }, [dep]);
 }
 
-export function Tilt({ children, max = 8, style = {}, className = "" }) {
-  const ref = useRef(null);
-  const move = e => { const el = ref.current; const r = el.getBoundingClientRect(); const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; el.style.transform = `perspective(1000px) rotateY(${x * max}deg) rotateX(${-y * max}deg) translateZ(0)`; };
-  const leave = () => { ref.current.style.transform = "perspective(1000px) rotateY(0) rotateX(0)"; };
+export function Tilt({ children, max = 8, style = {}, className = "" }: { children: React.ReactNode; max?: number; style?: React.CSSProperties; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const move = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = ref.current; if (!el) return;
+    const r = el.getBoundingClientRect(); const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+    el.style.transform = `perspective(1000px) rotateY(${x * max}deg) rotateX(${-y * max}deg) translateZ(0)`;
+  };
+  const leave = () => { if (ref.current) ref.current.style.transform = "perspective(1000px) rotateY(0) rotateX(0)"; };
   return <div ref={ref} className={"tilt " + className} onMouseMove={move} onMouseLeave={leave} style={style}>{children}</div>;
 }

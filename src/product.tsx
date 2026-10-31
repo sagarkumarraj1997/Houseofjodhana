@@ -1,18 +1,25 @@
-import { useState as useStateP } from "react";
-import { Slot } from "./Slot.jsx";
-import { useStore } from "./store.jsx";
-import { Lotus, Ornament, ArchPH } from "./shared.jsx";
-import { PRODUCTS, CATS, ProductCard } from "./catalog.jsx";
+import React, { useState as useStateP } from "react";
+import { Button, ActionIcon, Badge, Group, Box } from "@mantine/core";
+import { Slot } from "./Slot";
+import { useStore } from "./store";
+import { Lotus, Ornament, ArchPH } from "./shared";
+import { PRODUCTS, CATS, ProductCard, Product as ProductType } from "./catalog";
 /* PRODUCT DETAIL — Kalinga Arts */
 
-export function Product({ item, setRoute, openProduct }) {
+export interface ProductPageProps {
+  item: ProductType | null;
+  setRoute: (r: string) => void;
+  openProduct: (p: ProductType) => void;
+}
+
+export function Product({ item, setRoute, openProduct }: ProductPageProps) {
   const it = item || PRODUCTS[0];
   const [tab, setTab] = useStateP("story");
   const [activeImg, setActiveImg] = useStateP(0);
   const [qty, setQty] = useStateP(1);
   const [variant, setVariant] = useStateP("Standard · 12\"");
 
-  const tiers = [];
+  const tiers: any[] = [];
   const activeTier = 0;
   const unitPrice = it.price;
   const total = unitPrice * qty;
@@ -41,7 +48,7 @@ export function Product({ item, setRoute, openProduct }) {
       </section>
 
       <section style={{ padding: "30px 40px 60px", background: "var(--paper)" }}>
-        <div style={{ maxWidth: 1480, margin: "0 auto", display: "grid", gridTemplateColumns: "1.15fr 0.85fr", gap: 60 }}>
+        <div style={{ maxWidth: 1480, margin: "0 auto", display: "grid", gridTemplateColumns: "1.15fr 0.85fr", gap: 60 }} className="co-grid">
           <GalleryColumn gallery={gallery} activeImg={activeImg} setActiveImg={setActiveImg} item={it} />
           <SummaryColumn it={it} qty={qty} setQty={setQty} variant={variant} setVariant={setVariant} tiers={tiers} activeTier={activeTier} unitPrice={unitPrice} total={total} setRoute={setRoute} />
         </div>
@@ -56,7 +63,7 @@ export function Product({ item, setRoute, openProduct }) {
               { id: "care", l: "Care & Materials" },
               { id: "shipping", l: "Shipping & Returns" },
             ].map(t => (
-              <button key={t.id} onClick={() => setTab(t.id)} style={{ padding: "20px 28px", fontFamily: "'Cormorant Garamond',serif", fontSize: 22, fontStyle: tab === t.id ? "italic" : "normal", color: tab === t.id ? "var(--maroon)" : "var(--ink-soft)", borderBottom: tab === t.id ? "2px solid var(--maroon)" : "2px solid transparent", marginBottom: -1, transition: "all .3s", whiteSpace: "nowrap" }}>{t.l}</button>
+              <button key={t.id} onClick={() => setTab(t.id)} style={{ padding: "20px 28px", fontFamily: "'Cormorant Garamond',serif", fontSize: 22, fontStyle: tab === t.id ? "italic" : "normal", color: tab === t.id ? "var(--maroon)" : "var(--ink-soft)", border: "none", background: "none", borderBottom: tab === t.id ? "2px solid var(--maroon)" : "2px solid transparent", marginBottom: -1, transition: "all .3s", whiteSpace: "nowrap", cursor: "pointer" }}>{t.l}</button>
             ))}
           </div>
           <TabContent tab={tab} it={it} tiers={tiers} unitPrice={unitPrice} />
@@ -69,15 +76,16 @@ export function Product({ item, setRoute, openProduct }) {
   );
 }
 
-export function GalleryColumn({ gallery, activeImg, setActiveImg, item }) {
+export function GalleryColumn({ gallery, activeImg, setActiveImg, item }: { gallery: any[]; activeImg: number; setActiveImg: (i: number) => void; item: ProductType }) {
   const [zoom, setZoom] = useStateP(false);
   return (
     <div>
       <div style={{ display: "grid", gridTemplateColumns: "80px 1fr", gap: 20 }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           {gallery.map((g, i) => (
-            <button key={i} onClick={() => setActiveImg(i)} style={{ position: "relative", padding: 0 }}>
+            <button key={i} onClick={() => setActiveImg(i)} style={{ position: "relative", padding: 0, background: "none", border: "none", cursor: "pointer" }}>
               <div className={`ph ${g.tone}`} style={{ height: 80, outline: activeImg === i ? "2px solid var(--maroon)" : "1px solid var(--gold-line)", outlineOffset: activeImg === i ? 2 : 0, position: "relative" }}>
+                {/* IMAGE SLOT: "pdp-<id>-1-thumb" … "pdp-<id>-4-thumb" (auto-falls back to main slot if not set) */}
                 <Slot id={g.slot + "-thumb"} placeholder="" shape="rounded" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
                 <div className="ph-corner" style={{ fontSize: 8, zIndex: 5 }}>0{i + 1}</div>
               </div>
@@ -89,6 +97,7 @@ export function GalleryColumn({ gallery, activeImg, setActiveImg, item }) {
         </div>
         <div onClick={() => setZoom(!zoom)} style={{ cursor: zoom ? "zoom-out" : "zoom-in", position: "relative" }}>
           <div className={`ph ${gallery[activeImg].tone}`} style={{ height: 720, position: "relative" }}>
+            {/* IMAGE SLOT: "pdp-<id>-1" … "pdp-<id>-4" (falls back to "pc-<id>") — Product detail main photo */}
             <Slot id={gallery[activeImg].slot} placeholder={`Drop ${item.name} photo`} shape="rounded" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
             <div className="ph-corner" style={{ zIndex: 5 }}>{item.id} · 0{activeImg + 1}/04</div>
             <div className="ph-label" style={{ zIndex: 5 }}>{gallery[activeImg].label}</div>
@@ -111,13 +120,13 @@ export function GalleryColumn({ gallery, activeImg, setActiveImg, item }) {
   );
 }
 
-export function SummaryColumn({ it, qty, setQty, variant, setVariant, tiers, activeTier, unitPrice, total, setRoute }) {
+export function SummaryColumn({ it, qty, setQty, variant, setVariant, unitPrice, total, setRoute }: any) {
   const store = useStore();
   const variants = ["Mini · 4\"", "Standard · 12\"", "Royal · 18\""];
   return (
     <div>
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
-        <span className="uc" style={{ color: "var(--maroon)", border: "1px solid var(--maroon)", padding: "4px 8px" }}>Made in Jodhpur</span>
+        <Badge variant="outline" color="maroon" style={{ textTransform: "uppercase", borderRadius: 2 }}>Made in Jodhpur</Badge>
         <span className="uc" style={{ color: "var(--ink-soft)" }}>{it.id}</span>
         {it.tag && <span className="uc" style={{ color: "var(--saffron)" }}>· {it.tag}</span>}
       </div>
@@ -130,7 +139,7 @@ export function SummaryColumn({ it, qty, setQty, variant, setVariant, tiers, act
       <div style={{ marginTop: 24, display: "flex", alignItems: "baseline", gap: 16 }}>
         <span className="serif" style={{ fontSize: 48, fontWeight: 500, color: "var(--maroon)", lineHeight: 1 }}>₹{unitPrice.toLocaleString("en-IN")}</span>
         <span style={{ fontSize: 18, color: "var(--ink-soft)", textDecoration: "line-through" }}>₹{it.mrp.toLocaleString("en-IN")}</span>
-        <span className="uc" style={{ color: "var(--emerald)", padding: "4px 8px", border: "1px solid var(--emerald)" }}>{Math.round((1 - unitPrice / it.mrp) * 100)}% off</span>
+        <Badge variant="outline" color="emerald" style={{ borderRadius: 2 }}>{Math.round((1 - unitPrice / it.mrp) * 100)}% off</Badge>
       </div>
       <div style={{ fontSize: 12, color: "var(--ink-soft)", marginTop: 6 }}>Inclusive of all taxes · Ships from Jodhpur in {it.leadDays} days</div>
 
@@ -138,7 +147,7 @@ export function SummaryColumn({ it, qty, setQty, variant, setVariant, tiers, act
         <div className="uc" style={{ color: "var(--ink-soft)", marginBottom: 14 }}>Size / Variant</div>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           {variants.map(v => (
-            <button key={v} onClick={() => setVariant(v)} style={{ padding: "12px 18px", border: `1px solid ${variant === v ? "var(--maroon)" : "var(--gold-line)"}`, background: variant === v ? "var(--maroon)" : "transparent", color: variant === v ? "var(--paper)" : "var(--ink)", fontFamily: "'Cormorant Garamond',serif", fontSize: 17, fontStyle: variant === v ? "italic" : "normal" }}>{v}</button>
+            <button key={v} onClick={() => setVariant(v)} style={{ padding: "12px 18px", border: `1px solid ${variant === v ? "var(--maroon)" : "var(--gold-line)"}`, background: variant === v ? "var(--maroon)" : "transparent", color: variant === v ? "var(--paper)" : "var(--ink)", fontFamily: "'Cormorant Garamond',serif", fontSize: 17, fontStyle: variant === v ? "italic" : "normal", cursor: "pointer" }}>{v}</button>
           ))}
         </div>
       </div>
@@ -147,9 +156,9 @@ export function SummaryColumn({ it, qty, setQty, variant, setVariant, tiers, act
         <div>
           <div className="uc" style={{ color: "var(--ink-soft)", marginBottom: 10, fontSize: 9 }}>Quantity</div>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <button onClick={() => setQty(Math.max(1, qty - 1))} style={{ width: 34, height: 34, border: "1px solid var(--ink)", fontSize: 16 }}>−</button>
+            <button onClick={() => setQty(Math.max(1, qty - 1))} style={{ width: 34, height: 34, border: "1px solid var(--ink)", fontSize: 16, background: "none", cursor: "pointer" }}>−</button>
             <span className="blk-h" style={{ fontSize: 30, minWidth: 40, textAlign: "center" }}>{qty}</span>
-            <button onClick={() => setQty(qty + 1)} style={{ width: 34, height: 34, border: "1px solid var(--ink)", fontSize: 16 }}>+</button>
+            <button onClick={() => setQty(qty + 1)} style={{ width: 34, height: 34, border: "1px solid var(--ink)", fontSize: 16, background: "none", cursor: "pointer" }}>+</button>
           </div>
         </div>
         <div style={{ textAlign: "right" }}>
@@ -159,11 +168,12 @@ export function SummaryColumn({ it, qty, setQty, variant, setVariant, tiers, act
       </div>
 
       <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
-        <button className="btn solid" style={{ flex: 1, justifyContent: "center" }} onClick={() => store.add(it, qty, variant)}>Add to Bag <span className="arrow">→</span></button>
-        <button className="btn" style={{ padding: "14px 20px" }} title="Wishlist" aria-label="Save to wishlist" onClick={() => store.toggleWish(it)}>{store.inWish(it.id) ? "♥" : "♡"}</button>
-        <button className="btn" style={{ padding: "14px 20px" }} title="Share">↗</button>
+        <Button className="btn solid" style={{ flex: 1, justifyContent: "center", height: "auto" }} onClick={() => store.add(it, qty, variant)}>Add to Bag <span className="arrow">→</span></Button>
+        <ActionIcon variant="default" className="btn" style={{ width: 48, height: 48, padding: 0 }} title="Wishlist" aria-label="Save to wishlist" onClick={() => store.toggleWish(it)}>
+          {store.inWish(it.id) ? "♥" : "♡"}
+        </ActionIcon>
       </div>
-      <button className="btn" style={{ width: "100%", justifyContent: "center", marginTop: 12 }} onClick={() => { store.add(it, qty, variant, false); setRoute("checkout"); }}>Buy it now</button>
+      <Button className="btn" style={{ width: "100%", justifyContent: "center", marginTop: 12, height: "auto" }} onClick={() => { store.add(it, qty, variant, false); setRoute("checkout"); }}>Buy it now</Button>
       <div style={{ display: "flex", gap: 18, justifyContent: "center", marginTop: 16, fontSize: 12, color: "var(--ink-soft)", flexWrap: "wrap" }}><span>Free shipping over ₹2,000</span><span>·</span><span>14-day returns</span><span>·</span><span>UPI · Cards · COD</span></div>
 
       <div style={{ marginTop: 30, padding: "18px 20px", border: "1px solid var(--gold-line)", background: "var(--paper)", display: "flex", gap: 18, alignItems: "center" }}>
@@ -177,9 +187,9 @@ export function SummaryColumn({ it, qty, setQty, variant, setVariant, tiers, act
   );
 }
 
-export function TabContent({ tab, it, tiers, unitPrice }) {
+export function TabContent({ tab, it }: { tab: string; it: ProductType; tiers?: any[]; unitPrice?: number }) {
   if (tab === "story") return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "start" }}>
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "start" }} className="co-grid">
       <div>
         <div className="hindi" style={{ fontSize: 22, color: "var(--maroon)", marginBottom: 10 }}>हाथ की कला</div>
         <h3 className="serif" style={{ fontSize: 36, fontWeight: 400, margin: "0 0 18px", letterSpacing: "-0.01em" }}>
@@ -204,7 +214,7 @@ export function TabContent({ tab, it, tiers, unitPrice }) {
     </div>
   );
   if (tab === "specs") return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 0, border: "1px solid var(--gold-line)" }}>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 0, border: "1px solid var(--gold-line)" }} className="g4">
       {[
         ["Material", "Mango wood + brass"], ["Dimensions", "12\" × 9\" × 4\""], ["Weight", "720 g"], ["Finish", "Beeswax + gold"],
         ["Painting", "Hand-Pichwai"], ["Origin", "Sardarpura, Jodhpur"], ["Lead time", `${it.leadDays} days`], ["Hallmark", "House of Jodhana seal"],
@@ -220,7 +230,7 @@ export function TabContent({ tab, it, tiers, unitPrice }) {
     </div>
   );
   if (tab === "care") return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60 }}>
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60 }} className="co-grid">
       <div>
         <h3 className="serif" style={{ fontSize: 30, fontWeight: 400, margin: "0 0 16px" }}>Materials, named.</h3>
         <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
@@ -272,11 +282,12 @@ export function TabContent({ tab, it, tiers, unitPrice }) {
   return null;
 }
 
-export function ArtisanStrip({ it }) {
+export function ArtisanStrip({ it }: { it?: any }) {
   return (
     <section style={{ padding: "80px 40px", background: "var(--maroon-deep)", color: "var(--paper)" }}>
-      <div style={{ maxWidth: 1480, margin: "0 auto", display: "grid", gridTemplateColumns: "auto 1fr auto", gap: 40, alignItems: "center" }}>
+      <div style={{ maxWidth: 1480, margin: "0 auto", display: "grid", gridTemplateColumns: "auto 1fr auto", gap: 40, alignItems: "center" }} className="co-grid">
         <div className="ph dark" style={{ width: 120, height: 120, borderRadius: "50%", position: "relative", overflow: "hidden" }}>
+          {/* IMAGE SLOT: "artisan-portrait" — Round artisan profile avatar photo */}
           <Slot id="artisan-portrait" placeholder="" shape="circle" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
           <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", color: "var(--gold-soft)", fontFamily: "'Cormorant Garamond',serif", fontSize: 44, fontStyle: "italic", pointerEvents: "none" }}>L</div>
         </div>
@@ -285,13 +296,13 @@ export function ArtisanStrip({ it }) {
           <div className="serif" style={{ fontSize: 36, fontWeight: 500, lineHeight: 1 }}>Lakshmi Devi <span style={{ fontStyle: "italic", opacity: 0.6, fontSize: 24 }}>& atelier of 6</span></div>
           <div style={{ marginTop: 8, color: "rgba(248,239,216,0.75)", fontSize: 14 }}>Master Pichwai painter · 5th-generation lineage · Nathdwara</div>
         </div>
-        <button className="btn" style={{ borderColor: "var(--gold-soft)", color: "var(--gold-soft)" }}>Read her story <span className="arrow">→</span></button>
+        <Button className="btn" style={{ borderColor: "var(--gold-soft)", color: "var(--gold-soft)", height: "auto" }}>Read her story <span className="arrow">→</span></Button>
       </div>
     </section>
   );
 }
 
-export function Related({ openProduct, it }) {
+export function Related({ openProduct, it }: { openProduct: (p: ProductType) => void; it: ProductType }) {
   const related = PRODUCTS.filter(p => p.cat === it.cat && p.id !== it.id).slice(0, 4);
   return (
     <section style={{ padding: "100px 40px" }}>
@@ -303,11 +314,10 @@ export function Related({ openProduct, it }) {
           </div>
           <div className="uc" style={{ color: "var(--ink-soft)", cursor: "pointer" }}>View all →</div>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 24 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 24 }}>
           {related.map(r => <ProductCard key={r.id} item={r} onOpen={() => openProduct(r)} />)}
         </div>
       </div>
     </section>
   );
 }
-

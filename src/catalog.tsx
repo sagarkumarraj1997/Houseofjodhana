@@ -1,12 +1,24 @@
-import { useState as useStateC, useMemo as useMemoC } from "react";
-import { Slot } from "./Slot.jsx";
-import { useStore } from "./store.jsx";
-import { Emblem } from "./shared.jsx";
+import React, { useState as useStateC, useMemo as useMemoC } from "react";
+import { Badge, Button, ActionIcon, Group, Box } from "@mantine/core";
+import { Slot } from "./Slot";
+import { useStore } from "./store";
+import { Emblem } from "./shared";
 /* CATALOG — Kalinga Arts product catalog */
 
-/* Curated SKU list rooted in the four real categories.
-   Prices/SKU ids representative; user can edit later. */
-export const PRODUCTS = [
+export interface Product {
+  id: string;
+  cat: string;
+  name: string;
+  line?: string;
+  price: number;
+  mrp: number;
+  moq?: number;
+  leadDays?: number;
+  tone: string;
+  tag?: string | null;
+}
+
+export const PRODUCTS: Product[] = [
   // CHOWKI
   { id: "CHW·112", cat: "chowki", name: "Shrinathji Pichwai Chowki · 12\"", line: "Wooden · embossed · brass-fitted", price: 2860, mrp: 3400, moq: 1, leadDays: 7, tone: "maroon", tag: "bestseller" },
   { id: "CHW·113", cat: "chowki", name: "Lakshmi-Ganesh Chowki · set of 2", line: "Wooden · meenakari · lotus border", price: 1980, mrp: 2400, moq: 1, leadDays: 7, tone: "saffron", tag: "festive" },
@@ -42,11 +54,16 @@ export const CATS = [
   { id: "kamdhenu", label: "Kamdhenu", hindi: "कामधेनु" },
 ];
 
-export function Catalog({ openProduct, initialCat = "all" }) {
+export interface CatalogProps {
+  openProduct: (p: Product) => void;
+  initialCat?: string;
+}
+
+export function Catalog({ openProduct, initialCat = "all" }: CatalogProps) {
   const [cat, setCat] = useStateC(initialCat);
   const [sort, setSort] = useStateC("curated");
-  const [price, setPrice] = useStateC([0, 6000]);
-  const [view, setView] = useStateC("editorial");
+  const [price, setPrice] = useStateC<[number, number]>([0, 6000]);
+  const [view, setView] = useStateC<"editorial" | "dense">("editorial");
 
   const items = useMemoC(() => {
     let r = PRODUCTS.slice();
@@ -65,7 +82,7 @@ export function Catalog({ openProduct, initialCat = "all" }) {
       <section style={{ padding: "60px 40px 0", borderBottom: "1px solid var(--gold-line)", background: "var(--paper)" }}>
         <div style={{ maxWidth: 1480, margin: "0 auto" }}>
           <div className="uc" style={{ color: "var(--ink-soft)", marginBottom: 14 }}>Home / Catalog / Festive 2026</div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 30, gap: 40 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 30, gap: 40, flexWrap: "wrap" }}>
             <div>
               <div className="hindi" style={{ fontSize: 26, color: "var(--maroon)", marginBottom: 10 }}>हमारा संग्रह</div>
               <h1 className="blk-h" style={{ fontSize: "clamp(52px,7vw,112px)", margin: "0 0 18px" }}>
@@ -84,7 +101,7 @@ export function Catalog({ openProduct, initialCat = "all" }) {
           {/* category tabs */}
           <div style={{ display: "flex", gap: 0, overflowX: "auto" }}>
             {CATS.map(c => (
-              <button key={c.id} onClick={() => setCat(c.id)} style={{ padding: "16px 24px", fontFamily: "'Cormorant Garamond',serif", fontSize: 20, fontStyle: cat === c.id ? "italic" : "normal", fontWeight: 500, color: cat === c.id ? "var(--maroon)" : "var(--ink-soft)", borderBottom: cat === c.id ? "2px solid var(--maroon)" : "2px solid transparent", whiteSpace: "nowrap", transition: "all .25s", display: "flex", alignItems: "baseline", gap: 10 }}>
+              <button key={c.id} onClick={() => setCat(c.id)} style={{ padding: "16px 24px", fontFamily: "'Cormorant Garamond',serif", fontSize: 20, fontStyle: cat === c.id ? "italic" : "normal", fontWeight: 500, color: cat === c.id ? "var(--maroon)" : "var(--ink-soft)", borderBottom: cat === c.id ? "2px solid var(--maroon)" : "2px solid transparent", whiteSpace: "nowrap", transition: "all .25s", display: "flex", alignItems: "baseline", gap: 10, background: "none", border: "none", cursor: "pointer" }}>
                 <span className="hindi" style={{ fontSize: 14, opacity: 0.7 }}>{c.hindi}</span>
                 <span>{c.label}</span>
               </button>
@@ -105,8 +122,8 @@ export function Catalog({ openProduct, initialCat = "all" }) {
           </div>
           <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
             <span className="uc" style={{ color: "var(--ink-soft)" }}>View</span>
-            <button onClick={() => setView("editorial")} className="uc" style={{ color: view === "editorial" ? "var(--maroon)" : "var(--ink-soft)", borderBottom: view === "editorial" ? "1px solid var(--maroon)" : "1px solid transparent", paddingBottom: 2 }}>Editorial</button>
-            <button onClick={() => setView("dense")} className="uc" style={{ color: view === "dense" ? "var(--maroon)" : "var(--ink-soft)", borderBottom: view === "dense" ? "1px solid var(--maroon)" : "1px solid transparent", paddingBottom: 2 }}>Dense</button>
+            <button onClick={() => setView("editorial")} className="uc" style={{ color: view === "editorial" ? "var(--maroon)" : "var(--ink-soft)", borderBottom: view === "editorial" ? "1px solid var(--maroon)" : "1px solid transparent", paddingBottom: 2, background: "none", border: "none", cursor: "pointer" }}>Editorial</button>
+            <button onClick={() => setView("dense")} className="uc" style={{ color: view === "dense" ? "var(--maroon)" : "var(--ink-soft)", borderBottom: view === "dense" ? "1px solid var(--maroon)" : "1px solid transparent", paddingBottom: 2, background: "none", border: "none", cursor: "pointer" }}>Dense</button>
           </div>
         </div>
       </section>
@@ -119,7 +136,7 @@ export function Catalog({ openProduct, initialCat = "all" }) {
 
       {/* discovery footer */}
       <section style={{ padding: "80px 40px", background: "var(--ivory-2)", borderTop: "1px solid var(--gold-line)" }}>
-        <div style={{ maxWidth: 1480, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 24 }}>
+        <div style={{ maxWidth: 1480, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
           {[
             { t: "Made in Jodhpur", d: "Every piece is shaped, painted and blessed in our Sardarpura haveli — never outsourced.", cta: "Our story" },
             { t: "Custom Pichwai", d: "Want your family deity or a special motif painted? Our Pichwai master will design it with you.", cta: "Contact us" },
@@ -129,7 +146,7 @@ export function Catalog({ openProduct, initialCat = "all" }) {
               <div className="serif" style={{ fontSize: 42, color: "var(--gold-line)", fontStyle: "italic", lineHeight: 1, position: "absolute", top: 20, right: 26 }}>0{i + 1}</div>
               <div className="blk-h" style={{ fontSize: 30, margin: "0 0 14px", maxWidth: 250 }}>{c.t}</div>
               <div style={{ fontSize: 14, color: "var(--ink-soft)", lineHeight: 1.55, marginBottom: 24 }}>{c.d}</div>
-              <button className="btn" style={{ padding: "12px 20px" }}>{c.cta} <span className="arrow">→</span></button>
+              <Button className="btn" style={{ padding: "12px 20px", height: "auto" }}>{c.cta} <span className="arrow">→</span></Button>
             </div>
           ))}
         </div>
@@ -138,14 +155,14 @@ export function Catalog({ openProduct, initialCat = "all" }) {
   );
 }
 
-export function sortLabel(k) { return { curated: "Curated", "price-asc": "Price · low to high", "price-desc": "Price · high to low" }[k]; }
-export function sortKey(l) { return { "Curated": "curated", "Price · low to high": "price-asc", "Price · high to low": "price-desc" }[l]; }
+export function sortLabel(k: string) { return ({ curated: "Curated", "price-asc": "Price · low to high", "price-desc": "Price · high to low" } as Record<string, string>)[k] || "Curated"; }
+export function sortKey(l: string) { return ({ "Curated": "curated", "Price · low to high": "price-asc", "Price · high to low": "price-desc" } as Record<string, string>)[l] || "curated"; }
 
-export function FilterDropdown({ label, value, options, onChange }) {
+export function FilterDropdown({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (v: string) => void }) {
   const [open, setOpen] = useStateC(false);
   return (
     <div style={{ position: "relative" }}>
-      <button onClick={() => setOpen(!open)} style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", border: "1px solid var(--ink)", background: "var(--paper)", fontSize: 12, letterSpacing: 0.14, textTransform: "uppercase" }}>
+      <button onClick={() => setOpen(!open)} style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", border: "1px solid var(--ink)", background: "var(--paper)", fontSize: 12, letterSpacing: 0.14, textTransform: "uppercase", cursor: "pointer" }}>
         <span className="mono" style={{ color: "var(--ink-soft)" }}>{label}:</span>
         <span style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 17, fontStyle: "italic", textTransform: "none", letterSpacing: 0 }}>{value}</span>
         <span style={{ transition: "transform .3s", transform: open ? "rotate(180deg)" : "none" }}>▾</span>
@@ -166,7 +183,7 @@ export function FilterDropdown({ label, value, options, onChange }) {
   );
 }
 
-export function EditorialGrid({ items, openProduct }) {
+export function EditorialGrid({ items, openProduct }: { items: Product[]; openProduct: (p: Product) => void }) {
   const pattern = [[6, 3, 3], [3, 3, 6], [4, 4, 4], [3, 6, 3]];
   let i = 0;
   const rows = [];
@@ -196,7 +213,7 @@ export function EditorialGrid({ items, openProduct }) {
   );
 }
 
-export function DenseGrid({ items, openProduct }) {
+export function DenseGrid({ items, openProduct }: { items: Product[]; openProduct: (p: Product) => void }) {
   return (
     <div className="g4" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 24 }}>
       {items.map(it => <ProductCard key={it.id} item={it} onOpen={() => openProduct(it)} />)}
@@ -204,28 +221,69 @@ export function DenseGrid({ items, openProduct }) {
   );
 }
 
-export function ProductCard({ item, hero = false, onOpen }) {
+export function ProductCard({ item, hero = false, onOpen }: { item: Product; hero?: boolean; onOpen: () => void }) {
   const store = useStore();
   const [h, setH] = useStateC(false);
-  const tagColor = {
-    bestseller: "var(--maroon)",
-    festive: "var(--saffron)",
-    premium: "var(--gold-line)",
-    new: "var(--turq)",
-  };
   return (
-    <article onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)} onClick={onOpen} onMouseMove={e => { const r = e.currentTarget.getBoundingClientRect(); const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; const im = e.currentTarget.firstChild; im.style.transform = `perspective(900px) rotateY(${x * 10}deg) rotateX(${-y * 10}deg) translateZ(20px)`; }} style={{ cursor: "pointer", position: "relative" }}>
+    <article
+      onMouseEnter={() => setH(true)}
+      onMouseLeave={() => setH(false)}
+      onClick={onOpen}
+      onMouseMove={e => {
+        const r = e.currentTarget.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+        const im = e.currentTarget.firstChild as HTMLElement;
+        if (im) im.style.transform = `perspective(900px) rotateY(${x * 10}deg) rotateX(${-y * 10}deg) translateZ(20px)`;
+      }}
+      style={{ cursor: "pointer", position: "relative" }}
+    >
       <div style={{ position: "relative", overflow: "hidden", transition: "transform .6s cubic-bezier(.16,1,.3,1)", transform: h ? undefined : "none", boxShadow: h ? "0 30px 60px rgba(6,23,63,.18)" : "none" }}>
         <div className={`ph ${item.tone}`} style={{ height: hero ? 520 : 380, position: "relative" }}>
+          {/* IMAGE SLOT: "pc-<product_id>" (e.g. "pc-CHW·112", "pc-THL·204") — Main catalog product card photo */}
           <Slot id={`pc-${item.id}`} placeholder={`Drop ${item.name} photo`} shape="rounded" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", transform: h ? "scale(1.04)" : "scale(1)", transition: "transform 1s cubic-bezier(.2,.7,.2,1)" }} />
           <div style={{ position: "absolute", right: 10, bottom: 10, zIndex: 5, opacity: h ? 0 : .9, transition: "opacity .3s" }}><Emblem variant="white" size={26} /></div>
         </div>
         {item.tag && (
-          <div style={{ position: "absolute", top: 14, left: 14, padding: "6px 12px", background: "rgba(251,247,239,.92)", border: "none", color: "var(--ink)", borderRadius: 999, fontSize: 8.5, fontWeight: 500, letterSpacing: "0.22em", textTransform: "uppercase", zIndex: 5 }}>{item.tag}</div>
+          <Badge
+            variant="filled"
+            size="sm"
+            style={{
+              position: "absolute",
+              top: 14,
+              left: 14,
+              padding: "6px 12px",
+              background: "rgba(251,247,239,.92)",
+              color: "var(--ink)",
+              borderRadius: 999,
+              fontSize: 8.5,
+              fontWeight: 500,
+              letterSpacing: "0.22em",
+              textTransform: "uppercase",
+              zIndex: 5,
+            }}
+          >
+            {item.tag}
+          </Badge>
         )}
         <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: 14, display: "flex", justifyContent: "space-between", alignItems: "center", background: "linear-gradient(180deg,transparent,rgba(6,23,63,0.8))", opacity: h ? 1 : 0, transition: "opacity .35s", color: "var(--paper)", zIndex: 5 }}>
           <span className="uc" style={{ fontSize: 9 }}>Ships in {item.leadDays} days</span>
-          <div style={{ display: "flex", gap: 6 }}><button aria-label="Save to wishlist" onClick={e => { e.stopPropagation(); store.toggleWish(item); }} style={{ width: 34, height: 34, borderRadius: "50%", background: "var(--paper)", color: "var(--ink)", display: "grid", placeItems: "center" }}><svg width="14" height="14" viewBox="0 0 24 24" fill={store.inWish(item.id) ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.6"><path d="M12 21s-8-5-8-11a4.5 4.5 0 0 1 8-3 4.5 4.5 0 0 1 8 3c0 6-8 11-8 11z" /></svg></button><button onClick={e => { e.stopPropagation(); store.add(item, 1, "Standard · 12\""); }} style={{ padding: "8px 16px", borderRadius: 999, background: "var(--paper)", color: "var(--ink)", fontSize: 10, fontWeight: 500, letterSpacing: "0.22em", textTransform: "uppercase" }}>Add to Bag +</button></div>
+          <Group gap={6}>
+            <ActionIcon
+              variant="default"
+              aria-label="Save to wishlist"
+              onClick={e => { e.stopPropagation(); store.toggleWish(item); }}
+              style={{ width: 34, height: 34, borderRadius: "50%", background: "var(--paper)", color: "var(--ink)", border: "none" }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill={store.inWish(item.id) ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.6"><path d="M12 21s-8-5-8-11a4.5 4.5 0 0 1 8-3 4.5 4.5 0 0 1 8 3c0 6-8 11-8 11z" /></svg>
+            </ActionIcon>
+            <Button
+              size="xs"
+              onClick={e => { e.stopPropagation(); store.add(item, 1, "Standard · 12\""); }}
+              style={{ padding: "8px 16px", borderRadius: 999, background: "var(--paper)", color: "var(--ink)", fontSize: 10, fontWeight: 500, letterSpacing: "0.22em", textTransform: "uppercase", height: "auto" }}
+            >
+              Add to Bag +
+            </Button>
+          </Group>
         </div>
       </div>
       <div style={{ padding: "22px 2px 0", textAlign: "left" }}>
@@ -245,4 +303,3 @@ export function ProductCard({ item, hero = false, onOpen }) {
     </article>
   );
 }
-

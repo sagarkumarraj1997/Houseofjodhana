@@ -1,11 +1,16 @@
-import { useState as useStatePg } from "react";
-import { Slot } from "./Slot.jsx";
-import { Emblem, BrandMark, Ornament, CornerFlourish, DiamondStrip, SacredDivider, ArchPH, JodhpurStamp, Postmark, SectionHeader } from "./shared.jsx";
-import { PRODUCTS, ProductCard } from "./catalog.jsx";
-/* PAGES — Gallery, Blog, About Us */
+import React, { useState as useStatePg } from "react";
+import { Slot } from "./Slot";
+import { Emblem, BrandMark, Ornament, CornerFlourish, DiamondStrip, SacredDivider, ArchPH, JodhpurStamp, Postmark, SectionHeader } from "./shared";
+import { PRODUCTS, ProductCard, Product } from "./catalog";
+
+/* PAGES — Gallery, Blog, About Us, Gifting, Logistics, Contact */
+
+export interface GalleryProps {
+  setRoute: (route: string) => void;
+}
 
 /* ════════ GALLERY ════════ */
-export function Gallery({ setRoute }) {
+export function Gallery({ setRoute }: GalleryProps) {
   const [filter, setFilter] = useStatePg("all");
   const cats = [
     { id: "all", label: "All", hindi: "सब" },
@@ -15,6 +20,7 @@ export function Gallery({ setRoute }) {
     { id: "atelier", label: "Atelier", hindi: "कार्यशाला" },
     { id: "festive", label: "Festive", hindi: "उत्सव" },
   ];
+
   // masonry-style varied tiles
   const tiles = [
     { cat: "chowki", tone: "maroon", span: "6", h: 480, label: "Shrinathji Pichwai Chowki" },
@@ -44,7 +50,9 @@ export function Gallery({ setRoute }) {
           <p style={{ fontSize: 17, color: "var(--ink-soft)", maxWidth: 640, margin: "0 auto", lineHeight: 1.55 }}>
             A visual pilgrimage through our craft — finished pieces, the hands that make them, and altars dressed for festival. Drop your own photographs into any frame.
           </p>
-          <div style={{ marginTop: 30, maxWidth: 300, marginLeft: "auto", marginRight: "auto" }}><Ornament width={300} /></div>
+          <div style={{ marginTop: 30, maxWidth: 300, marginLeft: "auto", marginRight: "auto" }}>
+            <Ornament width={300} />
+          </div>
         </div>
       </section>
 
@@ -52,7 +60,24 @@ export function Gallery({ setRoute }) {
       <section style={{ padding: "24px 40px", borderBottom: "1px solid var(--gold-line)", background: "var(--ivory-2)", position: "sticky", top: 112, zIndex: 50 }}>
         <div style={{ maxWidth: 1480, margin: "0 auto", display: "flex", justifyContent: "center", gap: 6, flexWrap: "wrap" }}>
           {cats.map(c => (
-            <button key={c.id} onClick={() => setFilter(c.id)} style={{ display: "flex", alignItems: "baseline", gap: 8, padding: "10px 20px", border: `1px solid ${filter === c.id ? "var(--maroon)" : "var(--gold-line)"}`, background: filter === c.id ? "var(--maroon)" : "transparent", color: filter === c.id ? "var(--paper)" : "var(--ink)", fontFamily: "'Cormorant Garamond',serif", fontSize: 18, fontStyle: filter === c.id ? "italic" : "normal", transition: "all .25s" }}>
+            <button
+              key={c.id}
+              onClick={() => setFilter(c.id)}
+              style={{
+                display: "flex",
+                alignItems: "baseline",
+                gap: 8,
+                padding: "10px 20px",
+                border: `1px solid ${filter === c.id ? "var(--maroon)" : "var(--gold-line)"}`,
+                background: filter === c.id ? "var(--maroon)" : "transparent",
+                color: filter === c.id ? "var(--paper)" : "var(--ink)",
+                fontFamily: "'Cormorant Garamond',serif",
+                fontSize: 18,
+                fontStyle: filter === c.id ? "italic" : "normal",
+                transition: "all .25s",
+                cursor: "pointer"
+              }}
+            >
               <span className="hindi" style={{ fontSize: 13, opacity: 0.75 }}>{c.hindi}</span>
               <span>{c.label}</span>
             </button>
@@ -66,6 +91,7 @@ export function Gallery({ setRoute }) {
           {shown.map((t, i) => (
             <figure key={i} style={{ gridColumn: `span ${t.span}`, margin: 0, position: "relative", cursor: "pointer", overflow: "hidden", border: "1px solid var(--gold-line)" }} className="gal-tile">
               <div className={`ph ${t.tone}`} style={{ height: t.h, position: "relative" }}>
+                {/* IMAGE SLOT: "gal-0", "gal-1", … "gal-N" — Gallery masonry tile photo */}
                 <Slot id={`gal-${i}`} placeholder={`Drop photo · ${t.label}`} shape="rounded" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
                 {/* gold inner frame */}
                 <div style={{ position: "absolute", inset: 12, border: "1px solid var(--gold-soft)", opacity: 0.4, pointerEvents: "none", zIndex: 4 }} />
@@ -80,7 +106,9 @@ export function Gallery({ setRoute }) {
         </div>
 
         <div style={{ textAlign: "center", marginTop: 60 }}>
-          <button className="btn solid" onClick={() => setRoute("catalog")}>Shop the Catalog <span className="arrow">→</span></button>
+          <button className="btn solid" onClick={() => setRoute("catalog")}>
+            Shop the Catalog <span className="arrow">→</span>
+          </button>
         </div>
       </section>
       <style>{`.gal-tile:hover .gal-cap{transform:translateY(0)!important;opacity:1!important}.gal-tile:hover{box-shadow:6px 6px 0 var(--maroon)}`}</style>
@@ -88,10 +116,16 @@ export function Gallery({ setRoute }) {
   );
 }
 
+export interface BlogProps {
+  setRoute?: (route: string) => void;
+}
+
 /* ════════ BLOG ════════ */
-export function Blog({ setRoute }) {
+export function Blog({ setRoute }: BlogProps) {
   const featured = {
-    cat: "Craft Journal", date: "24 May 2026", read: "7 min",
+    cat: "Craft Journal",
+    date: "24 May 2026",
+    read: "7 min",
     title: "Why the cobalt in our blue pottery is older than any nation",
     excerpt: "From the Persian potters who arrived in Jodhpur's court to the quartz-and-glass paste fired without clay — the strange, beautiful chemistry behind Jodhpur blue.",
     tone: "peacock",
@@ -124,7 +158,21 @@ export function Blog({ setRoute }) {
             </div>
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
               {topics.map(t => (
-                <button key={t} onClick={() => setTopic(t)} className="uc" style={{ padding: "8px 14px", border: `1px solid ${topic === t ? "var(--maroon)" : "var(--gold-line)"}`, background: topic === t ? "var(--maroon)" : "transparent", color: topic === t ? "var(--paper)" : "var(--ink-soft)", transition: "all .25s" }}>{t}</button>
+                <button
+                  key={t}
+                  onClick={() => setTopic(t)}
+                  className="uc"
+                  style={{
+                    padding: "8px 14px",
+                    border: `1px solid ${topic === t ? "var(--maroon)" : "var(--gold-line)"}`,
+                    background: topic === t ? "var(--maroon)" : "transparent",
+                    color: topic === t ? "var(--paper)" : "var(--ink-soft)",
+                    transition: "all .25s",
+                    cursor: "pointer"
+                  }}
+                >
+                  {t}
+                </button>
               ))}
             </div>
           </div>
@@ -136,6 +184,7 @@ export function Blog({ setRoute }) {
         <div style={{ maxWidth: 1480, margin: "0 auto" }}>
           <article style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: 0, border: "1px solid var(--maroon)", background: "var(--paper)", cursor: "pointer", boxShadow: "5px 5px 0 var(--maroon)" }}>
             <div className={`ph ${featured.tone}`} style={{ minHeight: 480, position: "relative" }}>
+              {/* IMAGE SLOT: "blog-featured" — Journal featured article hero photo */}
               <Slot id="blog-featured" placeholder="Drop featured article photo" shape="rounded" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
               <div style={{ position: "absolute", top: 18, left: 18, padding: "6px 12px", background: "var(--paper)", border: "1px solid var(--maroon)", zIndex: 5 }} className="uc">Featured</div>
             </div>
@@ -157,6 +206,7 @@ export function Blog({ setRoute }) {
             <article key={i} style={{ cursor: "pointer", position: "relative" }} className="blog-card">
               <div style={{ position: "relative", overflow: "hidden", border: "1px solid var(--gold-line)" }}>
                 <div className={`ph ${p.tone}`} style={{ height: 300, position: "relative" }}>
+                  {/* IMAGE SLOT: "blog-0", "blog-1", … "blog-N" — Journal article card photo */}
                   <Slot id={`blog-${i}`} placeholder={`Drop photo · ${p.cat}`} shape="rounded" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", transition: "transform 1s cubic-bezier(.2,.7,.2,1)" }} className="blog-img" />
                 </div>
               </div>
@@ -181,7 +231,7 @@ export function Blog({ setRoute }) {
             <p style={{ fontSize: 16, color: "rgba(248,239,216,0.78)", margin: "0 0 24px", lineHeight: 1.5 }}>One letter a month — new craft stories, festive lookbooks, and first look at seasonal drops.</p>
             <div style={{ display: "flex", gap: 0, maxWidth: 440, border: "1px solid var(--gold-soft)" }}>
               <input placeholder="your@email" style={{ flex: 1, background: "transparent", border: "none", color: "var(--paper)", fontFamily: "'Cormorant Garamond',serif", fontSize: 18, padding: "14px 18px", outline: "none" }} />
-              <button style={{ padding: "0 24px", background: "var(--gold-soft)", color: "var(--maroon-deep)" }} className="uc">Subscribe</button>
+              <button style={{ padding: "0 24px", background: "var(--gold-soft)", color: "var(--maroon-deep)", border: "none", cursor: "pointer" }} className="uc">Subscribe</button>
             </div>
           </div>
         </div>
@@ -191,8 +241,12 @@ export function Blog({ setRoute }) {
   );
 }
 
+export interface AboutProps {
+  setRoute: (route: string) => void;
+}
+
 /* ════════ ABOUT US ════════ */
-export function About({ setRoute }) {
+export function About({ setRoute }: AboutProps) {
   return (
     <div>
       {/* hero */}
@@ -208,7 +262,9 @@ export function About({ setRoute }) {
           <p style={{ fontSize: 19, color: "var(--ink-soft)", maxWidth: 680, margin: "0 auto", lineHeight: 1.6 }}>
             The House of Jodhana hand-finishes devotional objects in the blue lanes of Sardarpura, Jodhpur — never outsourced, never factory-made, always blessed before they leave.
           </p>
-          <div style={{ marginTop: 36, maxWidth: 300, marginLeft: "auto", marginRight: "auto" }}><SacredDivider mark="॥ श्री ॥" /></div>
+          <div style={{ marginTop: 36, maxWidth: 300, marginLeft: "auto", marginRight: "auto" }}>
+            <SacredDivider mark="॥ श्री ॥" />
+          </div>
         </div>
       </section>
 
@@ -293,7 +349,8 @@ export function About({ setRoute }) {
       {/* atelier photo band */}
       <section style={{ padding: "0 40px 100px" }}>
         <div style={{ maxWidth: 1480, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 18 }}>
-          {[["about-a", "Pichwai painter", "maroon"], ["about-b", "Brass casting", "dark"], ["about-c", "Marble inlay", "saffron"], ["about-d", "Velvet boxing", "emerald"]].map(([id, l, tone], i) => (
+          {/* IMAGE SLOTS: "about-a", "about-b", "about-c", "about-d" — About atelier photo band */}
+          {([["about-a", "Pichwai painter", "maroon"], ["about-b", "Brass casting", "dark"], ["about-c", "Marble inlay", "saffron"], ["about-d", "Velvet boxing", "emerald"]] as [string, string, string][]).map(([id, l, tone], i) => (
             <div key={i} className={`ph ${tone}`} style={{ height: i % 2 === 0 ? 320 : 260, marginTop: i % 2 === 0 ? 0 : 40, position: "relative" }}>
               <Slot id={id} placeholder={`Drop · ${l}`} shape="rounded" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
             </div>
@@ -323,32 +380,74 @@ export function About({ setRoute }) {
   );
 }
 
+export interface ContactProps {
+  setRoute?: (route: string) => void;
+}
 
 /* ════════ CONTACT ════════ */
-export function Contact({ setRoute }) {
+export function Contact({ setRoute }: ContactProps) {
   const [sent, setSent] = useStatePg(false);
-  const ip = { width: "100%", border: "none", borderBottom: "1px solid var(--ink)", background: "transparent", padding: "12px 0", fontFamily: "'Cormorant Garamond',serif", fontSize: 22, outline: "none", color: "var(--ink)" };
+  const ip: React.CSSProperties = {
+    width: "100%",
+    border: "none",
+    borderBottom: "1px solid var(--ink)",
+    background: "transparent",
+    padding: "12px 0",
+    fontFamily: "'Cormorant Garamond',serif",
+    fontSize: 22,
+    outline: "none",
+    color: "var(--ink)"
+  };
+
   return (
     <div>
       <section style={{ padding: "80px 40px 60px", textAlign: "center" }} className="kamal">
         <div style={{ maxWidth: 980, margin: "0 auto" }}>
           <div className="uc" style={{ color: "var(--ink-soft)", marginBottom: 18 }}>Home / Contact</div>
           <div className="hindi" style={{ fontSize: 30, color: "var(--royal)", marginBottom: 12 }}>खम्मा घणी सा</div>
-          <h1 className="blk-h" style={{ fontSize: "clamp(52px,7vw,116px)", margin: "0 0 22px" }}>Write to <span className="blk-chip">the haveli</span></h1>
-          <p style={{ fontSize: 18, color: "var(--ink-soft)", maxWidth: 620, margin: "0 auto", lineHeight: 1.6 }}>Questions about a piece, a custom Pichwai, or a visit to our workshop — we reply within a day.</p>
+          <h1 className="blk-h" style={{ fontSize: "clamp(52px,7vw,116px)", margin: "0 0 22px" }}>
+            Write to <span className="blk-chip">the haveli</span>
+          </h1>
+          <p style={{ fontSize: 18, color: "var(--ink-soft)", maxWidth: 620, margin: "0 auto", lineHeight: 1.6 }}>
+            Questions about a piece, a custom Pichwai, or a visit to our workshop — we reply within a day.
+          </p>
         </div>
       </section>
       <section style={{ padding: "80px 40px 110px" }}>
         <div style={{ maxWidth: 1300, margin: "0 auto", display: "grid", gridTemplateColumns: "minmax(0,1.2fr) minmax(0,.8fr)", gap: 60, alignItems: "start" }}>
           <div style={{ padding: 48, border: "1px solid var(--gold)", background: "var(--ivory)", position: "relative" }}>
             {sent ? (
-              <div style={{ textAlign: "center", padding: "60px 0" }}><Emblem size={90} style={{ margin: "0 auto 20px" }} /><div className="hindi" style={{ fontSize: 28, color: "var(--royal)" }}>घणो आभार</div><div className="blk-h" style={{ fontSize: 40, margin: "10px 0" }}>Thank you</div><p style={{ color: "var(--ink-soft)" }}>Your letter is on its way to Jodhpur.</p></div>
+              <div style={{ textAlign: "center", padding: "60px 0" }}>
+                <Emblem size={90} style={{ margin: "0 auto 20px" }} />
+                <div className="hindi" style={{ fontSize: 28, color: "var(--royal)" }}>घणो आभार</div>
+                <div className="blk-h" style={{ fontSize: 40, margin: "10px 0" }}>Thank you</div>
+                <p style={{ color: "var(--ink-soft)" }}>Your letter is on its way to Jodhpur.</p>
+              </div>
             ) : (
               <form onSubmit={e => { e.preventDefault(); setSent(true); }} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "28px 30px" }}>
-                {[["Your name", "Meera Shah"], ["Email", "meera@email.com"], ["Phone", "+91"], ["City", "Ahmedabad"]].map(([l, p]) => <label key={l}><div className="uc" style={{ fontSize: 9, color: "var(--ink-soft)" }}>{l}</div><input style={ip} placeholder={p} /></label>)}
-                <label style={{ gridColumn: "1 / -1" }}><div className="uc" style={{ fontSize: 9, color: "var(--ink-soft)" }}>Subject</div><select style={ip}>{["A product question", "Custom Pichwai", "Gifting", "Order & shipping", "Visit the workshop"].map(o => <option key={o}>{o}</option>)}</select></label>
-                <label style={{ gridColumn: "1 / -1" }}><div className="uc" style={{ fontSize: 9, color: "var(--ink-soft)" }}>Message</div><textarea rows="5" style={{ ...ip, border: "1px solid var(--gold)", padding: 14, marginTop: 10, resize: "vertical" }} /></label>
-                <div style={{ gridColumn: "1 / -1" }}><button className="btn solid" type="submit">Send letter <span className="arrow">→</span></button></div>
+                {[["Your name", "Meera Shah"], ["Email", "meera@email.com"], ["Phone", "+91"], ["City", "Ahmedabad"]].map(([l, p]) => (
+                  <label key={l}>
+                    <div className="uc" style={{ fontSize: 9, color: "var(--ink-soft)" }}>{l}</div>
+                    <input style={ip} placeholder={p} />
+                  </label>
+                ))}
+                <label style={{ gridColumn: "1 / -1" }}>
+                  <div className="uc" style={{ fontSize: 9, color: "var(--ink-soft)" }}>Subject</div>
+                  <select style={ip}>
+                    {["A product question", "Custom Pichwai", "Gifting", "Order & shipping", "Visit the workshop"].map(o => (
+                      <option key={o}>{o}</option>
+                    ))}
+                  </select>
+                </label>
+                <label style={{ gridColumn: "1 / -1" }}>
+                  <div className="uc" style={{ fontSize: 9, color: "var(--ink-soft)" }}>Message</div>
+                  <textarea rows={5} style={{ ...ip, border: "1px solid var(--gold)", padding: 14, marginTop: 10, resize: "vertical" }} />
+                </label>
+                <div style={{ gridColumn: "1 / -1" }}>
+                  <button className="btn solid" type="submit">
+                    Send letter <span className="arrow">→</span>
+                  </button>
+                </div>
               </form>
             )}
           </div>
@@ -356,9 +455,17 @@ export function Contact({ setRoute }) {
             <div style={{ background: "var(--midnight)", color: "var(--ivory)", padding: 34 }} className="kamal-dark">
               <div className="uc" style={{ color: "var(--gold-soft)", marginBottom: 14 }}>Visit the haveli</div>
               <div className="blk-h" style={{ fontSize: 30, marginBottom: 12 }}>Sardarpura, Jodhpur</div>
-              <div style={{ lineHeight: 1.9, fontSize: 15, opacity: .85 }}>Rajasthan 342003<br />hello@houseofjodhana.com<br />+91 00000 00000<br />Mon–Sat · 10:00–19:00 IST</div>
+              <div style={{ lineHeight: 1.9, fontSize: 15, opacity: 0.85 }}>
+                Rajasthan 342003<br />
+                hello@houseofjodhana.com<br />
+                +91 00000 00000<br />
+                Mon–Sat · 10:00–19:00 IST
+              </div>
             </div>
-            <div style={{ display: "flex", gap: 24, alignItems: "center", justifyContent: "center", padding: 24, border: "1px solid var(--gold)" }}><JodhpurStamp size={130} /><Postmark /></div>
+            <div style={{ display: "flex", gap: 24, alignItems: "center", justifyContent: "center", padding: 24, border: "1px solid var(--gold)" }}>
+              <JodhpurStamp size={130} />
+              <Postmark />
+            </div>
           </div>
         </div>
       </section>
@@ -366,10 +473,13 @@ export function Contact({ setRoute }) {
   );
 }
 
-Object.assign(window, { Gallery, Blog, About, Gifting, Logistics, Contact });
+export interface GiftingProps {
+  setRoute: (route: string) => void;
+  openProduct: (p: Product) => void;
+}
 
 /* ════════ GIFTING — dedicated page for gift sets & hampers ════════ */
-export function Gifting({ setRoute, openProduct }) {
+export function Gifting({ setRoute, openProduct }: GiftingProps) {
   const gifts = PRODUCTS.filter(p => p.cat === "gifts");
   const occasions = [
     { hindi: "दीपावली", label: "Diwali", tone: "saffron", slot: "gift-occ-1" },
@@ -377,6 +487,7 @@ export function Gifting({ setRoute, openProduct }) {
     { hindi: "जन्माष्टमी", label: "Janmashtami", tone: "dark", slot: "gift-occ-3" },
     { hindi: "गृह प्रवेश", label: "Housewarming", tone: "emerald", slot: "gift-occ-4" },
   ];
+
   return (
     <div>
       {/* hero */}
@@ -394,8 +505,18 @@ export function Gifting({ setRoute, openProduct }) {
               Pichwai-painted jars on metal trays, Rudraksh bells, crystal t-light stands, bowl-and-spoon sets — each gift box velvet-lined and tied with a kalāva ribbon. Curated for festival, wedding and corporate giving.
             </p>
             <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
-              <button className="btn solid" onClick={() => { const el = document.getElementById("gift-grid"); if (el) window.scrollTo({ top: el.offsetTop - 140, behavior: "smooth" }); }}>Shop hampers <span className="arrow">→</span></button>
-              <button className="btn" onClick={() => setRoute("contact")}>Custom gifting</button>
+              <button
+                className="btn solid"
+                onClick={() => {
+                  const el = document.getElementById("gift-grid");
+                  if (el) window.scrollTo({ top: el.offsetTop - 140, behavior: "smooth" });
+                }}
+              >
+                Shop hampers <span className="arrow">→</span>
+              </button>
+              <button className="btn" onClick={() => setRoute("contact")}>
+                Custom gifting
+              </button>
             </div>
           </div>
           <div style={{ position: "relative", height: 560, display: "grid", placeItems: "center" }}>
@@ -416,12 +537,15 @@ export function Gifting({ setRoute, openProduct }) {
         <div style={{ maxWidth: 1480, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 44 }}>
             <div className="uc" style={{ color: "var(--gold-line)", marginBottom: 10 }}>Gift by occasion</div>
-            <h2 className="blk-h" style={{ fontSize: "clamp(32px,3.6vw,52px)", margin: "0 0 24px" }}>For every <em style={{ color: "var(--maroon)" }}>auspicious</em> moment.</h2>
+            <h2 className="blk-h" style={{ fontSize: "clamp(32px,3.6vw,52px)", margin: "0 0 24px" }}>
+              For every <em style={{ color: "var(--maroon)" }}>auspicious</em> moment.
+            </h2>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 24 }}>
             {occasions.map((o, i) => (
               <div key={i} onClick={() => setRoute("gifts")} style={{ cursor: "pointer", position: "relative" }}>
                 <div className={`ph ${o.tone}`} style={{ height: 280, position: "relative", border: "1px solid var(--gold-line)" }}>
+                  {/* IMAGE SLOT: "gift-occ-1" … "gift-occ-4" (o.slot) — Curated gifting occasion photo */}
                   <Slot id={o.slot} placeholder={`Drop · ${o.label}`} shape="rounded" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
                   <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: 20, background: "linear-gradient(180deg,transparent 50%,rgba(31,20,12,0.75))", zIndex: 5 }}>
                     <div className="hindi" style={{ fontSize: 22, color: "var(--gold-soft)" }}>{o.hindi}</div>
@@ -439,7 +563,9 @@ export function Gifting({ setRoute, openProduct }) {
         <div style={{ maxWidth: 1480, margin: "0 auto" }}>
           <SectionHeader eyebrow={`${gifts.length} gift sets & hampers`} hindi="हमारे उपहार" title={<>Every <em>gift set</em>, individually.</>} sub="Every hamper hand-assembled and velvet-boxed in Jodhpur." />
           <div style={{ marginTop: 70, display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 32 }}>
-            {gifts.map(g => <ProductCard key={g.id} item={g} onOpen={() => openProduct(g)} />)}
+            {gifts.map(g => (
+              <ProductCard key={g.id} item={g} onOpen={() => openProduct(g)} />
+            ))}
           </div>
         </div>
       </section>
@@ -456,18 +582,28 @@ export function Gifting({ setRoute, openProduct }) {
             Custom Pichwai motifs, your family name on the ribbon, your card inside. Write to us and we will design a box just for you.
           </p>
           <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
-            <button className="btn" style={{ borderColor: "var(--gold-soft)", color: "var(--gold-soft)" }} onClick={() => setRoute("contact")}>Request a quote <span className="arrow">→</span></button>
-            <button className="btn" style={{ borderColor: "var(--paper)", color: "var(--paper)" }} onClick={() => setRoute("catalog")}>Browse Catalog</button>
+            <button className="btn" style={{ borderColor: "var(--gold-soft)", color: "var(--gold-soft)" }} onClick={() => setRoute("contact")}>
+              Request a quote <span className="arrow">→</span>
+            </button>
+            <button className="btn" style={{ borderColor: "var(--paper)", color: "var(--paper)" }} onClick={() => setRoute("catalog")}>
+              Browse Catalog
+            </button>
           </div>
-          <div style={{ marginTop: 54, display: "flex", justifyContent: "center" }}><DiamondStrip color="var(--gold-soft)" count={18} /></div>
+          <div style={{ marginTop: 54, display: "flex", justifyContent: "center" }}>
+            <DiamondStrip color="var(--gold-soft)" count={18} />
+          </div>
         </div>
       </section>
     </div>
   );
 }
 
+export interface LogisticsProps {
+  setRoute: (route: string) => void;
+}
+
 /* ════════ LOGISTICS & SHIPMENT SERVICES ════════ */
-export function Logistics({ setRoute }) {
+export function Logistics({ setRoute }: LogisticsProps) {
   const services = [
     { n: "i.", t: "Domestic Courier", d: "3–7 day delivery across India. Free over ₹2,000. Insured, tracked, fragile-safe packing for every idol." },
     { n: "ii.", t: "International Air", d: "8–12 day express to 32 countries. DDP available — we clear customs, you receive at the door." },
@@ -481,6 +617,7 @@ export function Logistics({ setRoute }) {
     ["In Transit", "Live tracking via our dashboard. Customs paperwork pre-cleared for export orders."],
     ["Delivered", "Doorstep delivery. Damage-free guarantee — if it breaks in transit, we remake it free."],
   ];
+
   return (
     <div>
       {/* hero */}
@@ -496,7 +633,9 @@ export function Logistics({ setRoute }) {
           <p style={{ fontSize: 18, color: "var(--ink-soft)", maxWidth: 660, margin: "0 auto", lineHeight: 1.6 }}>
             Forty-eight years of shipping fragile devotional craft. We pack every idol like it's bound for a temple — because often, it is. Tracked, insured, and damage-free guaranteed across 32 countries.
           </p>
-          <div style={{ marginTop: 36, maxWidth: 300, marginLeft: "auto", marginRight: "auto" }}><Ornament width={300} /></div>
+          <div style={{ marginTop: 36, maxWidth: 300, marginLeft: "auto", marginRight: "auto" }}>
+            <Ornament width={300} />
+          </div>
         </div>
       </section>
 
@@ -563,14 +702,18 @@ export function Logistics({ setRoute }) {
             </p>
             <div style={{ display: "flex", gap: 0, border: "1px solid var(--maroon)", maxWidth: 460 }}>
               <input placeholder="KK-26-XXXX · order ID" style={{ flex: 1, background: "transparent", border: "none", color: "var(--ink)", fontFamily: "'Cormorant Garamond',serif", fontSize: 18, padding: "14px 18px", outline: "none" }} />
-              <button style={{ padding: "0 22px", background: "var(--maroon)", color: "var(--paper)" }} className="uc">Track →</button>
+              <button style={{ padding: "0 22px", background: "var(--maroon)", color: "var(--paper)", border: "none", cursor: "pointer" }} className="uc">Track →</button>
             </div>
-            <button className="btn" style={{ marginTop: 20 }} onClick={() => setRoute("contact")}>Open shipment dashboard <span className="arrow">→</span></button>
+            <button className="btn" style={{ marginTop: 20 }} onClick={() => setRoute("contact")}>
+              Open shipment dashboard <span className="arrow">→</span>
+            </button>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
+            {/* IMAGE SLOT: "logi-pack-1" — Muslin wrapping packaging photo */}
             <div className="ph maroon" style={{ height: 300, position: "relative" }}>
               <Slot id="logi-pack-1" placeholder="Muslin wrapping · 600×800" shape="rounded" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
             </div>
+            {/* IMAGE SLOT: "logi-pack-2" — Wood crating packaging photo */}
             <div className="ph dark" style={{ height: 300, marginTop: 30, position: "relative" }}>
               <Slot id="logi-pack-2" placeholder="Crating · 600×800" shape="rounded" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
             </div>
@@ -584,12 +727,20 @@ export function Logistics({ setRoute }) {
           <div className="uc" style={{ color: "var(--ink-soft)", marginBottom: 30 }}>Our shipping partners</div>
           <div style={{ display: "flex", justifyContent: "center", gap: 0, flexWrap: "wrap", border: "1px solid var(--gold-line)" }}>
             {partners.map((p, i) => (
-              <div key={i} style={{ flex: "1 1 16%", minWidth: 160, padding: "28px 20px", borderRight: i < partners.length - 1 ? "1px solid var(--gold-line)" : "none", fontFamily: "'Cormorant Garamond',serif", fontSize: 22, fontWeight: 500, color: "var(--ink-soft)" }}>{p}</div>
+              <div key={i} style={{ flex: "1 1 16%", minWidth: 160, padding: "28px 20px", borderRight: i < partners.length - 1 ? "1px solid var(--gold-line)" : "none", fontFamily: "'Cormorant Garamond',serif", fontSize: 22, fontWeight: 500, color: "var(--ink-soft)" }}>
+                {p}
+              </div>
             ))}
           </div>
-          <div style={{ marginTop: 28, fontSize: 12, color: "var(--ink-soft)", fontStyle: "italic", fontFamily: "'Cormorant Garamond',serif" }}>*Damage-free guarantee: if a piece breaks in certified transit, we remake and reship at no cost.</div>
+          <div style={{ marginTop: 28, fontSize: 12, color: "var(--ink-soft)", fontStyle: "italic", fontFamily: "'Cormorant Garamond',serif" }}>
+            *Damage-free guarantee: if a piece breaks in certified transit, we remake and reship at no cost.
+          </div>
         </div>
       </section>
     </div>
   );
+}
+
+if (typeof window !== "undefined") {
+  Object.assign(window, { Gallery, Blog, About, Gifting, Logistics, Contact });
 }
