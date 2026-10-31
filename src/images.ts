@@ -39,6 +39,8 @@ export type ImageEntry = string | ImageDetail;
 export const IMAGES: Record<string, ImageEntry> = {
   // Landing hero
   "hero-pichwai": { src: "/images/gal-1.png", alt: "House of Jodhana - Pichwai Chowki Hero" },
+  "hero-side-l": { src: "/images/hero-left.jpg", alt: "House of Jodhana gallery" },
+  "hero-side-r": { src: "/images/hero-right.jpg", alt: "House of Jodhana gallery" },
 
   // Gallery
   "gal-0": { src: "/images/gal-0.webp", alt: "House of Jodhana gallery" },
