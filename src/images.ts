@@ -42,6 +42,9 @@ export const IMAGES: Record<string, ImageEntry> = {
   "hero-side-l": { src: "/images/hero-left.jpg", alt: "House of Jodhana gallery" },
   "hero-side-r": { src: "/images/hero-right.jpg", alt: "House of Jodhana gallery" },
 
+  // 3D Collection Ring
+  "ring-chowki": { src: "/images/chowki.jpeg", alt: "Handcrafted Wooden Chowki" },
+
   // Gallery
   "gal-0": { src: "/images/gal-0.webp", alt: "House of Jodhana gallery" },
   "gal-1": { src: "/images/gal-1.png", alt: "Marwari Model" },
